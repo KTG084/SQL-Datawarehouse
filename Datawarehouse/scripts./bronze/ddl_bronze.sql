@@ -16,8 +16,8 @@ CREATE TABLE bronze.crm_prd_info (
 	 prd_nm        VARCHAR(50),
 	 prd_cost        INT,
 	 prd_line       VARCHAR(50),
-	 prd_start_date         TIMESTAMP,
-	 prd_end_date         TIMESTAMP
+	 prd_start_dt         TIMESTAMP,
+	 prd_end_dt         TIMESTAMP
 );
 
 DROP TABLE IF EXISTS bronze.crm_sales_details;
