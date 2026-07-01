@@ -1,118 +1,165 @@
-<svg viewBox="0 0 1200 560" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, Helvetica, Arial, sans-serif">
-  <defs>
-    <linearGradient id="bgGrad" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#0f1420"/>
-      <stop offset="100%" stop-color="#161c2c"/>
-    </linearGradient>
-    <linearGradient id="bronzeGrad" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#cd7f32"/>
-      <stop offset="100%" stop-color="#a3602099"/>
-      <stop offset="100%" stop-color="#8a4a1c"/>
-    </linearGradient>
-    <linearGradient id="silverGrad" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#d9d9e3"/>
-      <stop offset="100%" stop-color="#9a9aa8"/>
-    </linearGradient>
-    <linearGradient id="goldGrad" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#ffd66b"/>
-      <stop offset="100%" stop-color="#e0a80f"/>
-    </linearGradient>
-    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
-      <path d="M0,0 L0,6 L9,3 z" fill="#8892a6"/>
-    </marker>
-    <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
-      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#000000" flood-opacity="0.35"/>
-    </filter>
-  </defs>
+# SQL Data Warehouse
 
-  <rect x="0" y="0" width="1200" height="560" fill="url(#bgGrad)"/>
+A PostgreSQL data warehouse built on the **Medallion Architecture** (Bronze → Silver → Gold). Raw CRM and ERP CSV extracts are ingested as-is, cleansed and standardized, and finally modeled into a business-friendly **star schema** ready for reporting and analytics.
 
-  <text x="600" y="46" text-anchor="middle" fill="#f4f6fb" font-size="26" font-weight="700">SQL Data Warehouse — Medallion Architecture</text>
-  <text x="600" y="72" text-anchor="middle" fill="#8892a6" font-size="14">CRM &amp; ERP Sources  →  Bronze (Raw)  →  Silver (Cleansed)  →  Gold (Business-Ready)</text>
+![Architecture Overview](docs/images/architecture.svg)
+<!-- PLACEHOLDER: docs/images/architecture.svg — end-to-end medallion architecture (sources → bronze → silver → gold → consumption) -->
 
-  <!-- Sources -->
-  <g filter="url(#softShadow)">
-    <rect x="30" y="150" width="150" height="260" rx="14" fill="#232a3d" stroke="#3a4258" stroke-width="1.5"/>
-  </g>
-  <text x="105" y="182" text-anchor="middle" fill="#f4f6fb" font-size="16" font-weight="700">Source Systems</text>
-  <rect x="50" y="200" width="110" height="60" rx="8" fill="#2e3650" stroke="#4b5471"/>
-  <text x="105" y="226" text-anchor="middle" fill="#e6e9f2" font-size="12" font-weight="600">CRM</text>
-  <text x="105" y="244" text-anchor="middle" fill="#9aa2b8" font-size="10">cust / prd / sales</text>
-  <rect x="50" y="280" width="110" height="60" rx="8" fill="#2e3650" stroke="#4b5471"/>
-  <text x="105" y="306" text-anchor="middle" fill="#e6e9f2" font-size="12" font-weight="600">ERP</text>
-  <text x="105" y="324" text-anchor="middle" fill="#9aa2b8" font-size="10">loc / cust / px_cat</text>
-  <text x="105" y="380" text-anchor="middle" fill="#8892a6" font-size="10">CSV Files</text>
+---
 
-  <line x1="180" y1="280" x2="238" y2="280" stroke="#8892a6" stroke-width="2" marker-end="url(#arrow)"/>
+## 📖 Overview
 
-  <!-- Bronze -->
-  <g filter="url(#softShadow)">
-    <rect x="240" y="120" width="230" height="320" rx="16" fill="url(#bronzeGrad)"/>
-  </g>
-  <text x="355" y="155" text-anchor="middle" fill="#2a1608" font-size="18" font-weight="800">🥉 BRONZE</text>
-  <text x="355" y="175" text-anchor="middle" fill="#3d2410" font-size="11" font-weight="600">Raw, As-Is Data</text>
-  <rect x="262" y="195" width="186" height="34" rx="6" fill="#ffffff33"/>
-  <text x="355" y="217" text-anchor="middle" fill="#2a1608" font-size="11">crm_cust_info</text>
-  <rect x="262" y="235" width="186" height="34" rx="6" fill="#ffffff33"/>
-  <text x="355" y="257" text-anchor="middle" fill="#2a1608" font-size="11">crm_prd_info</text>
-  <rect x="262" y="275" width="186" height="34" rx="6" fill="#ffffff33"/>
-  <text x="355" y="297" text-anchor="middle" fill="#2a1608" font-size="11">crm_sales_details</text>
-  <rect x="262" y="315" width="186" height="34" rx="6" fill="#ffffff33"/>
-  <text x="355" y="337" text-anchor="middle" fill="#2a1608" font-size="11">erp_loc_a101 / erp_cust_az12</text>
-  <rect x="262" y="355" width="186" height="34" rx="6" fill="#ffffff33"/>
-  <text x="355" y="377" text-anchor="middle" fill="#2a1608" font-size="11">erp_px_cat_g1v2</text>
-  <text x="355" y="410" text-anchor="middle" fill="#2a1608" font-size="10" font-style="italic">load_bronze() • TRUNCATE + COPY</text>
+This project simulates a real-world enterprise data warehouse combining two source systems:
 
-  <line x1="470" y1="280" x2="528" y2="280" stroke="#8892a6" stroke-width="2" marker-end="url(#arrow)"/>
+- **CRM** — customer, product, and sales transaction data
+- **ERP** — customer demographics, location, and product category data
 
-  <!-- Silver -->
-  <g filter="url(#softShadow)">
-    <rect x="530" y="120" width="230" height="320" rx="16" fill="url(#silverGrad)"/>
-  </g>
-  <text x="645" y="155" text-anchor="middle" fill="#22242c" font-size="18" font-weight="800">🥈 SILVER</text>
-  <text x="645" y="175" text-anchor="middle" fill="#32343d" font-size="11" font-weight="600">Cleansed &amp; Standardized</text>
-  <rect x="552" y="195" width="186" height="34" rx="6" fill="#ffffff55"/>
-  <text x="645" y="217" text-anchor="middle" fill="#22242c" font-size="11">Trimmed / Deduplicated</text>
-  <rect x="552" y="235" width="186" height="34" rx="6" fill="#ffffff55"/>
-  <text x="645" y="257" text-anchor="middle" fill="#22242c" font-size="11">Standardized Codes</text>
-  <rect x="552" y="275" width="186" height="34" rx="6" fill="#ffffff55"/>
-  <text x="645" y="297" text-anchor="middle" fill="#22242c" font-size="11">Valid Dates &amp; Values</text>
-  <rect x="552" y="315" width="186" height="34" rx="6" fill="#ffffff55"/>
-  <text x="645" y="337" text-anchor="middle" fill="#22242c" font-size="11">Derived cat_id / Business Rules</text>
-  <rect x="552" y="355" width="186" height="34" rx="6" fill="#ffffff55"/>
-  <text x="645" y="377" text-anchor="middle" fill="#22242c" font-size="11">dwh_create_date audit column</text>
-  <text x="645" y="410" text-anchor="middle" fill="#22242c" font-size="10" font-style="italic">load_silver() • Transform + Insert</text>
+The warehouse is organized into three layers, each with its own schema, DDL scripts, and load procedures:
 
-  <line x1="760" y1="280" x2="818" y2="280" stroke="#8892a6" stroke-width="2" marker-end="url(#arrow)"/>
+| Layer | Schema | Purpose |
+|---|---|---|
+| 🥉 **Bronze** | `bronze` | Raw, unmodified data loaded directly from source CSV files |
+| 🥈 **Silver** | `silver` | Cleansed, standardized, and deduplicated data with business rules applied |
+| 🥇 **Gold** | `gold` | Business-ready, dimensional (star schema) views for consumption |
 
-  <!-- Gold -->
-  <g filter="url(#softShadow)">
-    <rect x="820" y="120" width="230" height="320" rx="16" fill="url(#goldGrad)"/>
-  </g>
-  <text x="935" y="155" text-anchor="middle" fill="#3d2c02" font-size="18" font-weight="800">🥇 GOLD</text>
-  <text x="935" y="175" text-anchor="middle" fill="#4a3603" font-size="11" font-weight="600">Business-Ready (Star Schema)</text>
-  <rect x="842" y="200" width="186" height="50" rx="6" fill="#ffffff44"/>
-  <text x="935" y="222" text-anchor="middle" fill="#3d2c02" font-size="11" font-weight="700">dim_customers</text>
-  <text x="935" y="238" text-anchor="middle" fill="#4a3603" font-size="9">view</text>
-  <rect x="842" y="258" width="186" height="50" rx="6" fill="#ffffff44"/>
-  <text x="935" y="280" text-anchor="middle" fill="#3d2c02" font-size="11" font-weight="700">dim_products</text>
-  <text x="935" y="296" text-anchor="middle" fill="#4a3603" font-size="9">view</text>
-  <rect x="842" y="316" width="186" height="50" rx="6" fill="#ffffff77"/>
-  <text x="935" y="338" text-anchor="middle" fill="#3d2c02" font-size="11" font-weight="700">fact_sales</text>
-  <text x="935" y="354" text-anchor="middle" fill="#4a3603" font-size="9">view</text>
-  <text x="935" y="410" text-anchor="middle" fill="#3d2c02" font-size="10" font-style="italic">ddl_gold.sql • Analytical Views</text>
+---
 
-  <line x1="1050" y1="280" x2="1108" y2="280" stroke="#8892a6" stroke-width="2" marker-end="url(#arrow)"/>
+## 🗂️ Repository Structure
 
-  <!-- Consumption -->
-  <g filter="url(#softShadow)">
-    <rect x="1110" y="180" width="70" height="200" rx="14" fill="#232a3d" stroke="#3a4258" stroke-width="1.5"/>
-  </g>
-  <text x="1145" y="205" text-anchor="middle" fill="#f4f6fb" font-size="11" font-weight="700">BI /</text>
-  <text x="1145" y="220" text-anchor="middle" fill="#f4f6fb" font-size="11" font-weight="700">Reports /</text>
-  <text x="1145" y="235" text-anchor="middle" fill="#f4f6fb" font-size="11" font-weight="700">Ad-hoc</text>
-  <text x="1145" y="250" text-anchor="middle" fill="#f4f6fb" font-size="11" font-weight="700">SQL</text>
+```
+SQL-Datawarehouse-main/
+│
+├── Datawarehouse/
+│   ├── scripts./
+│   │   ├── init_database.sql          # Creates bronze / silver / gold schemas
+│   │   │
+│   │   ├── bronze/
+│   │   │   ├── ddl_bronze.sql         # Bronze table definitions
+│   │   │   └── proc_load_bronze.sql   # bronze.load_bronze() — loads CSVs via COPY
+│   │   │
+│   │   ├── silver/
+│   │   │   ├── ddl_silver.sql         # Silver table definitions (+ audit column)
+│   │   │   └── proc_load_silver.sql   # silver.load_silver() — cleans & transforms
+│   │   │
+│   │   └── gold/
+│   │       └── ddl_gold.sql           # Gold star-schema views (dims + fact)
+│   │
+│   └── tests/
+│       ├── testsForBronzebeforeSilver.sql   # Bronze data-quality checks
+│       └── testForGOLD.sql                  # Gold key-integrity checks
+│
+└── docs/
+    └── images/                        # Diagrams referenced in this README
+```
 
-  <text x="600" y="500" text-anchor="middle" fill="#8892a6" font-size="12">Quality checks run at each hand-off — see /Datawarehouse/tests</text>
-  <text x="600" y="525" text-anchor="middle" fill="#5b6377" font-size="11">Engine: PostgreSQL  •  Procedures: PL/pgSQL</text>
-</svg>
+---
+
+## 🏗️ Architecture
+
+The pipeline follows the classic **Bronze → Silver → Gold** pattern:
+
+1. **Bronze** — raw CRM/ERP `.csv` files are truncated and reloaded as-is into staging tables using PostgreSQL's `COPY` command. No transformation happens here; this layer exists purely for traceability back to the source.
+2. **Silver** — data is cleaned: names are trimmed, codes (gender, marital status, country) are standardized into readable values, duplicate customer records are resolved, invalid dates are nulled out, and derived columns (like product category ID) are computed. An audit column (`dwh_create_date`) is stamped on every row.
+3. **Gold** — silver tables are joined and reshaped into a dimensional model exposed as SQL views: two dimensions (`dim_customers`, `dim_products`) and one fact table (`fact_sales`), ready for BI tools and ad-hoc analysis.
+
+![ETL Pipeline Flow](docs/images/data_flow.svg)
+<!-- PLACEHOLDER: docs/images/data_flow.svg — detailed load & transform flow from CSV sources through load_bronze(), load_silver(), to the gold views -->
+
+---
+
+## ⭐ Data Model (Gold Layer)
+
+The gold layer exposes a simple **star schema**:
+
+- **`gold.fact_sales`** — one row per sales order line, with foreign keys to both dimensions plus order/ship/due dates, sales amount, quantity, and price.
+- **`gold.dim_customers`** — customer attributes merged from CRM customer info, ERP demographic data, and ERP location data.
+- **`gold.dim_products`** — current product attributes merged from CRM product info and ERP product category data (historical/expired products are excluded).
+
+![Gold Star Schema](docs/images/data_model.svg)
+<!-- PLACEHOLDER: docs/images/data_model.svg — star schema diagram of fact_sales, dim_customers, dim_products -->
+
+---
+
+## ⚙️ Layer Details
+
+### Bronze Layer
+- **Tables:** `crm_cust_info`, `crm_prd_info`, `crm_sales_details`, `erp_loc_a101`, `erp_cust_az12`, `erp_px_cat_g1v2`
+- **Load procedure:** `bronze.load_bronze()`
+  - Truncates each table, then bulk-loads it with `COPY ... DELIMITER ',' CSV HEADER`
+  - Logs load duration per table and total batch duration via `RAISE NOTICE`
+  - Wrapped in exception handling that reports `SQLERRM` / `SQLSTATE` on failure
+
+### Silver Layer
+- **Tables:** same entities as Bronze, plus a `dwh_create_date` audit timestamp column
+- **Load procedure:** `silver.load_silver()`
+  - Deduplicates customers, keeping the most recent record per `cst_id` via `ROW_NUMBER()`
+  - Standardizes categorical codes: `S/M` → `Single/Married`, `F/M` → `Female/Male`, `DE`/`US`/`USA` → full country names
+  - Derives `cat_id` and normalizes `prd_key` from the raw product key, and computes `prd_end_dt` using `LEAD()` over product history
+  - Validates and recomputes malformed integer-encoded dates and inconsistent sales/quantity/price combinations
+  - Re-derives customer IDs prefixed with `NAS` and nulls out future-dated birthdates
+
+### Gold Layer
+- **Views:** `gold.dim_customers`, `gold.dim_products`, `gold.fact_sales`
+- Surrogate keys (`customer_key`, `product_key`) are generated with `ROW_NUMBER() OVER (...)`
+- Gender is resolved with a `COALESCE` fallback between CRM and ERP sources
+- Only currently active products (`prd_end_dt IS NULL`) are included in `dim_products`
+
+---
+
+## ✅ Data Quality Testing
+
+The `Datawarehouse/tests/` folder contains validation scripts run at key hand-off points:
+
+- **`testsForBronzebeforeSilver.sql`** — checks for duplicate/null primary keys, untrimmed text fields, invalid date ranges, and inconsistent sales calculations in the Bronze layer before promoting data to Silver.
+- **`testForGOLD.sql`** — checks for duplicate surrogate keys in the dimension views and orphaned fact rows (facts with no matching dimension key) in `gold.fact_sales`.
+
+---
+
+## 🚀 Getting Started
+
+**Prerequisites:** PostgreSQL (with `psql` or any SQL client), and access to the source CRM/ERP CSV files.
+
+1. **Create the schemas**
+   ```sql
+   \i Datawarehouse/scripts./init_database.sql
+   ```
+2. **Create Bronze tables and load raw data**
+   ```sql
+   \i Datawarehouse/scripts./bronze/ddl_bronze.sql
+   \i Datawarehouse/scripts./bronze/proc_load_bronze.sql
+   ```
+   > Update the file paths inside `proc_load_bronze.sql` to point to your local CSV source files before running.
+3. **Create Silver tables and transform the data**
+   ```sql
+   \i Datawarehouse/scripts./silver/ddl_silver.sql
+   \i Datawarehouse/scripts./silver/proc_load_silver.sql
+   ```
+4. **Create the Gold views**
+   ```sql
+   \i Datawarehouse/scripts./gold/ddl_gold.sql
+   ```
+5. **Validate**
+   ```sql
+   \i Datawarehouse/tests/testsForBronzebeforeSilver.sql
+   \i Datawarehouse/tests/testForGOLD.sql
+   ```
+6. Query the warehouse:
+   ```sql
+   SELECT * FROM gold.fact_sales LIMIT 100;
+   ```
+
+---
+
+## 🛠️ Tech Stack
+
+- **Database:** PostgreSQL
+- **Procedural logic:** PL/pgSQL (`CREATE PROCEDURE`, exception handling, `RAISE NOTICE` logging)
+- **Data loading:** `COPY` from CSV
+- **Modeling:** Views-based star schema (no physical materialization)
+
+---
+
+## 📌 Notes
+
+- File paths in `proc_load_bronze.sql` are currently hard-coded to a local Windows path and should be parameterized or updated for your environment.
+- The Gold layer is implemented entirely as **views**, so it always reflects the latest Silver data with no separate refresh step required.
